@@ -534,17 +534,17 @@ function remapGameActions(actions, idMap) {
     rejectVotes: remapPlayerIdList(action.rejectVotes, idMap),
     ladyOfTheLake: action.ladyOfTheLake
       ? {
-        ...action.ladyOfTheLake,
-        holder: remapPlayerId(action.ladyOfTheLake.holder, idMap),
-        target: remapPlayerId(action.ladyOfTheLake.target, idMap),
-      }
+          ...action.ladyOfTheLake,
+          holder: remapPlayerId(action.ladyOfTheLake.holder, idMap),
+          target: remapPlayerId(action.ladyOfTheLake.target, idMap),
+        }
       : null,
     assassination: action.assassination
       ? {
-        ...action.assassination,
-        assassin: remapPlayerId(action.assassination.assassin, idMap),
-        target: remapPlayerId(action.assassination.target, idMap),
-      }
+          ...action.assassination,
+          assassin: remapPlayerId(action.assassination.assassin, idMap),
+          target: remapPlayerId(action.assassination.target, idMap),
+        }
       : null,
   }));
 }
