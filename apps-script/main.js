@@ -3,6 +3,41 @@ const SETTINGS_SHEET_NAME = 'settings';
 const UNKNOWN_PLAYER_ID_PREFIX = 'unknown-';
 const UNKNOWN_PLAYER_NAME = '未知';
 
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('Avalon Recorder')
+    .addItem('建立空白模板', 'setupAvalonRecorderTemplate')
+    .addToUi();
+}
+
+function setupAvalonRecorderTemplate() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const settingsSheet = getOrCreateSettingsSheetForSetup(spreadsheet);
+
+  formatSettingsSheetAsPlainText(settingsSheet);
+  ensureSettingsTemplateBlock(settingsSheet, [
+    ['players', ''],
+    ['id', 'name'],
+    ['', ''],
+  ]);
+  ensureSettingsTemplateBlock(settingsSheet, [
+    ['appConfig', ''],
+    ['key', 'value'],
+    ['writeEndpoint', ''],
+  ]);
+  ensureSettingsTemplateBlock(settingsSheet, [
+    ['recordSheets', '', ''],
+    ['date', 'sheetName', 'gid'],
+  ]);
+
+  settingsSheet.autoResizeColumns(1, 3);
+
+  return {
+    ok: true,
+    settingsSheetName: SETTINGS_SHEET_NAME,
+  };
+}
+
 function doPost(e) {
   try {
     const body = parseJsonBody(e);
@@ -1139,6 +1174,61 @@ function getSettingsSheet(spreadsheet) {
   }
 
   return settingsSheet;
+}
+
+function getOrCreateSettingsSheetForSetup(spreadsheet) {
+  const settingsSheet = spreadsheet.getSheetByName(SETTINGS_SHEET_NAME);
+
+  if (settingsSheet) {
+    return settingsSheet;
+  }
+
+  const firstSheet = spreadsheet.getSheets()[0];
+
+  if (firstSheet && isSheetBlank(firstSheet)) {
+    firstSheet.setName(SETTINGS_SHEET_NAME);
+    return firstSheet;
+  }
+
+  return spreadsheet.insertSheet(SETTINGS_SHEET_NAME);
+}
+
+function formatSettingsSheetAsPlainText(settingsSheet) {
+  const columnCount = Math.min(settingsSheet.getMaxColumns(), 10);
+
+  settingsSheet.getRange(1, 1, settingsSheet.getMaxRows(), columnCount).setNumberFormat('@');
+}
+
+function ensureSettingsTemplateBlock(settingsSheet, rows) {
+  const values = settingsSheet.getDataRange().getValues();
+  const marker = normalizeKey(rows[0][0]);
+
+  if (findCell(values, marker)) {
+    return;
+  }
+
+  const lastUsedRow = findLastUsedRow(values);
+  const startRow = lastUsedRow > 0 ? lastUsedRow + 2 : 1;
+  const width = Math.max(...rows.map((row) => row.length));
+  const normalizedRows = rows.map((row) => {
+    const normalized = row.slice();
+
+    while (normalized.length < width) {
+      normalized.push('');
+    }
+
+    return normalized;
+  });
+
+  const range = settingsSheet.getRange(startRow, 1, normalizedRows.length, width);
+
+  writePlainTextRange(range, normalizedRows);
+}
+
+function isSheetBlank(sheet) {
+  const values = sheet.getDataRange().getValues();
+
+  return values.every((row) => isBlankRow(row));
 }
 
 function findRecordSheetsAppendTarget(settingsSheet) {
