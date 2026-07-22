@@ -1,10 +1,19 @@
-# Avalon Recorder Google Sheet 初始化
+# Avalon Recorder
 
-這個資料夾提供建立 Avalon Recorder 用 Google Sheet 的初始化檔案。
+阿瓦隆紀錄器。網站可以讀取指定 Google Sheet 的紀錄資料；如果該 Sheet 有設定 Apps Script Web App，也可以透過寫入密鑰進入編輯模式。
 
-- `main.js`：複製到 Google Apps Script 的程式碼。
-- `settings-template.csv`：空白 `settings` 工作頁模板。
-- `README.md`：設定步驟。
+網站：
+
+```text
+https://shizume97.github.io/avalon-recorder/
+```
+
+## 初始化檔案
+
+這個 repo 內提供 Google Sheet 初始化需要的檔案：
+
+- `google-sheet-setup/main.js`：複製到 Google Apps Script 的程式碼。
+- `google-sheet-setup/settings-template.csv`：空白 `settings` 工作頁模板。
 
 ## 初始化流程
 
@@ -21,7 +30,7 @@
 接著建立或匯入 `settings` 工作頁：
 
 - 工作頁名稱必須是 `settings`
-- 匯入 `settings-template.csv` 作為初始內容
+- 匯入 `google-sheet-setup/settings-template.csv` 作為初始內容
 - 匯入時分隔符類型可以使用「自動偵測」
 - 不要勾選「將文字轉換成數字、日期和公式」
 
@@ -47,7 +56,7 @@ date            sheetName       gid
 擴充功能 -> Apps Script
 ```
 
-把 `main.js` 的內容完整複製貼上，然後儲存。
+把 `google-sheet-setup/main.js` 的內容完整複製貼上，然後儲存。
 
 ### 3. 設定寫入密鑰
 
@@ -105,7 +114,7 @@ writeEndpoint   https://script.google.com/macros/s/.../exec
 https://shizume97.github.io/avalon-recorder/?sheetId={SHEET_ID}
 ```
 
-方式二：直接開首頁，然後在 `Google Sheet` input 貼上 Sheet 網址或 Sheet ID
+方式二：直接開網站，然後在 `Google Sheet` input 貼上 Sheet 網址或 Sheet ID
 
 ```text
 https://shizume97.github.io/avalon-recorder/
@@ -129,4 +138,4 @@ https://docs.google.com/spreadsheets/d/1abcDEF...xyz/edit
 
 ## 注意事項
 
-- 如果未來更新 `main.js`，需要到 Apps Script 重新貼上並重新部署。
+- 如果未來更新 `google-sheet-setup/main.js`，需要到 Apps Script 重新貼上並重新部署。
